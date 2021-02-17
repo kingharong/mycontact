@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -28,20 +29,31 @@ class PersonServiceTest {
 
     @Test
     void getPeopleExcludeBlocks(){
+        /*
         givenPeople();
         givenBlocks();
 
         List<Person> result = personService.getPeopleExcludeBlocks();
         result.forEach(System.out::println);
+
+         */
+        List<Person> result = personService.getPeopleExcludeBlocks();
+
+        assertThat(result.size()).isEqualTo(3);
+        assertThat(result.get(0).getName()).isEqualTo("martin");
+        assertThat(result.get(1).getName()).isEqualTo("cathy");
+        assertThat(result.get(2).getName()).isEqualTo("cindy");
     }
 
     @Test
     @Transactional
     void getPeopleByName(){
-        givenPeople();
+       // givenPeople();
         List<Person> result = personService.getPeopleByName("cathy");
-        result.forEach(System.out::println);
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getAge()).isEqualTo(9);
     }
+    /*
     @Test
     void cascadeTest(){
         givenPeople();
@@ -67,11 +79,13 @@ class PersonServiceTest {
 
     }
 
+     */
+
     @Test
     void getPerson(){
-        givenPeople();
+    //    givenPeople();
         Person person = personService.getPerson(4L);
-        System.out.println(person);
+        assertThat(person.getName()).isEqualTo("emma");
     }
     private void givenBlocks() {
         givenBlock("martin");
