@@ -1,15 +1,16 @@
 package com.test.study.project1.mycontact.domain;
 
 import com.test.study.project1.mycontact.domain.dto.Birthday;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 import net.bytebuddy.dynamic.loading.InjectionClassLoader;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Where;
+
 
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
 @Entity
@@ -18,11 +19,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
+@Where(clause = "deleted = false")
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty
+    @Column(nullable = false)
     private String name;
 
     private int age;
@@ -33,6 +37,9 @@ public class Person {
 
     private String address;
 
+    @ColumnDefault("0")
+    private boolean deleted;
+
     @Embedded
     @Valid
     private Birthday birthday;
@@ -40,6 +47,7 @@ public class Person {
     private String job;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Block block;
     //@ToString.Exclude 쓰면 블럭에 대한 쿼리문이 나오지 않음
     //optional false를 하면 반드시 person을 만들 때 block이 있어야 함

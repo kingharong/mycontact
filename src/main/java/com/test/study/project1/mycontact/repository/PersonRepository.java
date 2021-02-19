@@ -4,8 +4,6 @@ import com.test.study.project1.mycontact.domain.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.time.LocalDate;
 import java.util.List;
 
 public interface PersonRepository extends JpaRepository<Person,Long> {
@@ -23,5 +21,8 @@ public interface PersonRepository extends JpaRepository<Person,Long> {
             "person.birthday.dayOfBirthday=:dayOfBirthday")
     List<Person> findByMonthAndDayOfBirthDay(@Param("monthOfBirthday") int monthOfBirthday,
                                              @Param("dayOfBirthday") int dayOfBirthday);
-   // @Query(value = "select * from person where month_of_birthday= :monthOfBirthday and day_of_birthday=:dayOfBirthday",nativeQuery = true)
+   //@Query(value = "select * from person where month_of_birthday= :monthOfBirthday and day_of_birthday=:dayOfBirthday",nativeQuery = true)
+
+    @Query(value = "select * from Person person where person.deleted= true",nativeQuery = true) //person @where 무시하기 위함
+    List<Person> findPeopleDeleted();
 }
