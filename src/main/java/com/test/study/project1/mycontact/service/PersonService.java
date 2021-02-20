@@ -50,7 +50,15 @@ public class PersonService {
     }
 
     @Transactional
-    public void put(Person person){
+    public void put(PersonDto persondto){
+        Person person = Person.builder()
+                .name(persondto.getName())
+                .bloodType(persondto.getBloodType())
+                .address(persondto.getAddress())
+                .birthday(Birthday.of(persondto.getBirthday()))
+                .hobby(persondto.getHobby())
+                .job(persondto.getJob())
+                .build();
         personRepository.save(person);
     }
 
@@ -63,7 +71,6 @@ public class PersonService {
         }
         persondb.setName(person.getName())
                 .setAddress(person.getAddress())
-                .setAge(person.getAge())
                 .setBloodType(person.getBloodType())
                 .setHobby(person.getHobby())
                 .setJob(person.getJob());

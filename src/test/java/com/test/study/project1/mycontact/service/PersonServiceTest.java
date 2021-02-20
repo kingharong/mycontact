@@ -4,6 +4,7 @@ import com.test.study.project1.mycontact.domain.Block;
 import com.test.study.project1.mycontact.domain.Person;
 import com.test.study.project1.mycontact.repository.BlockRepository;
 import com.test.study.project1.mycontact.repository.PersonRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +29,7 @@ class PersonServiceTest {
     private BlockRepository blockRepository;
 
     @Test
+    //@Disabled -> 테스트 돌릴 떄 무시
     void getPeopleExcludeBlocks(){
         /*
         givenPeople();
@@ -105,14 +107,13 @@ class PersonServiceTest {
     }
 
     private void givenPerson(String name, int age, String bloodType) {
-        personRepository.save(Person.builder().name(name).age(age).bloodType(bloodType).build());
+        personRepository.save(Person.builder().name(name).bloodType(bloodType).build());
 
     }
 
     private void givenBlockPerson(String name, int age, String bloodType){
         Person blockPerson = Person.builder()
                 .name(name)
-                .age(age)
                 .bloodType(bloodType)
                 .block(Block.builder().name(name).build())  //cascade persist
                 .build();

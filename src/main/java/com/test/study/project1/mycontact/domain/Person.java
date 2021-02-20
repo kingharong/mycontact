@@ -29,8 +29,6 @@ public class Person {
     @Column(nullable = false)
     private String name;
 
-    private int age;
-
     private String hobby;
 
     private String bloodType;
@@ -55,6 +53,15 @@ public class Person {
 
 
 
-
+    public Integer getAge(){
+        if (this.birthday!=null) {
+            return LocalDate.now().getYear() - this.birthday.getYearOfBirthday() + 1;
+        }
+        return null;
+    }
+    public boolean isBirthDayToday(){
+        return LocalDate.now().equals(LocalDate.of(this.birthday.getYearOfBirthday(),
+                this.birthday.getMonthOfBirthday(), this.birthday.getDayOfBirthday()));
+    }
 
 }

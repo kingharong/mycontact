@@ -18,11 +18,7 @@ import java.time.LocalDate;
 @Builder
 public class Birthday  {
     private Integer yearOfBirthday;
-    @Min(1)
-    @Max(12)
     private Integer monthOfBirthday;
-    @Min(1)
-    @Max(31)
     private Integer dayOfBirthday;
     //int 는 not null, Integer는 null 허용
 
@@ -30,6 +26,11 @@ public class Birthday  {
         this.dayOfBirthday=birthday.getDayOfMonth();
         this.monthOfBirthday=birthday.getMonthValue();
         this.yearOfBirthday=birthday.getYear();
+    }
+
+
+    public static Birthday of(LocalDate birthday){
+        return new Birthday(birthday);
     }
 
 }

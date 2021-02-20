@@ -27,7 +27,7 @@ public class PersonController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void postPerson(@RequestBody Person person){
+    public void postPerson(@RequestBody PersonDto person){
         personService.put(person);
         log.info("person : {}",personRepository.findAll());
     }
@@ -47,6 +47,7 @@ public class PersonController {
     public void deletePerson(@PathVariable Long id){
         personService.delete(id);
         log.info("person : {}",personRepository.findAll());
+
 
 
     }

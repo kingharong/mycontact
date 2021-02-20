@@ -41,12 +41,9 @@ class PersonRepositoryTest {
     @Test
     void hashCodeAndEquals(){
         Person person1 = Person.builder()
-                .name("martin")
-                .age(22)
                 .build();
         Person person2 = Person.builder()
                 .name("martin")
-                .age(22)
                 .build();
         System.out.println(person1.equals(person2));
         System.out.println(person1.hashCode());
@@ -97,7 +94,6 @@ class PersonRepositoryTest {
     private void givenPerson(String name, int age, String bloodType, LocalDate birthday){
         Person person = Person.builder()
                 .name(name)
-                .age(age)
                 .bloodType(bloodType)
                 .build();
         person.setBirthday(new Birthday(birthday));
