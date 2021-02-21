@@ -91,6 +91,27 @@ class PersonRepositoryTest {
         assertThat(result.get(1).getName()).isEqualTo("cathy");
 
     }
+    @Test
+    void findByName(){
+        List<Person> people = personRepository.findByName("tony");
+        assertThat(people.size()).isEqualTo(1);
+        Person person = people.get(0);
+        assertAll(
+                ()-> assertThat(person.getName()).isEqualTo("tony"),
+                ()-> assertThat(person.getBirthday().getYearOfBirthday()).isEqualTo(1991)
+        );
+    }
+    @Test
+    void findByNameIfDeleted(){
+        List<Person> people = personRepository.findByName("andrew");
+        assertThat(people.size()).isEqualTo(0);
+    }
+    @Test
+    void findByMonthOfBirthDay(){
+        List<Person> people = personRepository.findByMonthOfBirthday(7);
+        assertThat(people.size()).isEqualTo(1);
+        assertThat(people.get(0).getName()).isEqualTo("tony");
+    }
     private void givenPerson(String name, int age, String bloodType, LocalDate birthday){
         Person person = Person.builder()
                 .name(name)
@@ -100,5 +121,6 @@ class PersonRepositoryTest {
 
         personRepository.save(person);
     }
+
 
 }

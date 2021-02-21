@@ -36,9 +36,7 @@ public class PersonService {
 
     @Transactional(readOnly = true)  //lazyinitializationexception 방지
     public Person getPerson(Long id){
-        Person person = personRepository.findById(id).orElseGet(null);
-        log.info("person: {}",person);
-        return person;
+        return personRepository.findById(id).orElse(null);
     }
 
     //@Transactional(readOnly = true)
@@ -75,7 +73,7 @@ public class PersonService {
                 .setHobby(person.getHobby())
                 .setJob(person.getJob());
         if (person.getBirthday()!=null){
-            persondb.setBirthday(new Birthday(person.getBirthday()));
+            persondb.setBirthday(Birthday.of(person.getBirthday()));
         }
         personRepository.save(persondb);
     }
