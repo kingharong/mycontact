@@ -3,6 +3,7 @@ package com.test.study.project1.mycontact.service;
 import com.test.study.project1.mycontact.controller.dto.PersonDto;
 import com.test.study.project1.mycontact.domain.Block;
 import com.test.study.project1.mycontact.domain.Person;
+import com.test.study.project1.mycontact.exception.PersonNotFoundException;
 import com.test.study.project1.mycontact.repository.BlockRepository;
 import com.test.study.project1.mycontact.repository.PersonRepository;
 import org.assertj.core.util.Lists;
@@ -122,7 +123,7 @@ class PersonServiceTest {
     void modifyIfPersonNotFound(){
         when(personRepository.findById(1L))
                 .thenReturn(Optional.empty());
-      assertThrows(RuntimeException.class,()->personService.modify(1L,mockPersonDto()));
+      assertThrows(PersonNotFoundException.class,()->personService.modify(1L,mockPersonDto()));
 
     }
     @Test
@@ -146,7 +147,7 @@ class PersonServiceTest {
     void modifyByNameIfPersonNotFound(){
         when(personRepository.findById(1L))
                 .thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, ()->personService.modify(1L,"deny"));
+        assertThrows(PersonNotFoundException.class, ()->personService.modify(1L,"deny"));
     }
     @Test
     void modifyByName(){
@@ -160,7 +161,7 @@ class PersonServiceTest {
     void deleteIfPersonNotFound(){
         when(personRepository.findById(1L))
                 .thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class,()->personService.delete(1L));
+        assertThrows(PersonNotFoundException.class,()->personService.delete(1L));
     }
     @Test
     void deletePerson(){

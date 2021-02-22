@@ -4,6 +4,8 @@ import com.test.study.project1.mycontact.controller.dto.PersonDto;
 import com.test.study.project1.mycontact.domain.Block;
 import com.test.study.project1.mycontact.domain.Person;
 import com.test.study.project1.mycontact.domain.dto.Birthday;
+import com.test.study.project1.mycontact.exception.PersonNotFoundException;
+import com.test.study.project1.mycontact.exception.RenameNotPermittedException;
 import com.test.study.project1.mycontact.repository.BlockRepository;
 import com.test.study.project1.mycontact.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
@@ -62,10 +64,10 @@ public class PersonService {
 
     @Transactional
     public void modify(Long id, PersonDto person) {
-        Person persondb = personRepository.findById(id).orElseThrow(()->new RuntimeException("존재하지 않는 사용자"));
+        Person persondb = personRepository.findById(id).orElseThrow(PersonNotFoundException::new);
 
         if (!persondb.getName().equals(person.getName())){
-            throw new RuntimeException("이름이 다릅니다");
+            throw new RenameNotPermittedException();
         }
         persondb.setName(person.getName())
                 .setAddress(person.getAddress())
@@ -80,14 +82,14 @@ public class PersonService {
 
     @Transactional
     public void modify(Long id, String name){
-        Person person = personRepository.findById(id).orElseThrow(()-> new RuntimeException("아이디가 존재하지 않음"));
+        Person person = personRepository.findById(id).orElseThrow(PersonNotFoundException::new);
         person.setName(name);
         personRepository.save(person);
     }
     @Transactional
     public void delete(Long id) {
         //personRepository.deleteById(id);
-        Person person = personRepository.findById(id).orElseThrow(()->new RuntimeException("존재하지 않음"));
+        Person person = personRepository.findById(id).orElseThrow(PersonNotFoundException::new);
         person.setDeleted(true);
         personRepository.save(person);
     }
