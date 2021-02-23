@@ -8,9 +8,9 @@ import com.test.study.project1.mycontact.config.serializer.BirthdaySerializer;
 import com.test.study.project1.mycontact.domain.dto.Birthday;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
+//EnableWebMvc
 @Configuration
 public class JsonConfig {
     @Bean

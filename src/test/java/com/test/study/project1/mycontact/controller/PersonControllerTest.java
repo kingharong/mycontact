@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.study.project1.mycontact.controller.dto.PersonDto;
 import com.test.study.project1.mycontact.domain.Person;
 import com.test.study.project1.mycontact.domain.dto.Birthday;
+import com.test.study.project1.mycontact.exception.handler.GlobalExceptionHandler;
 import com.test.study.project1.mycontact.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,8 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.time.LocalDate;
 
@@ -43,11 +46,30 @@ class PersonControllerTest {
     @Autowired
     private MappingJackson2HttpMessageConverter messageConverter;
 
+    @Autowired
+    private GlobalExceptionHandler globalExceptionHandler;
+
+    @Autowired
+    private WebApplicationContext wac;
+
     private MockMvc mockMvc;
 
     @BeforeEach
     void beforeEach(){
-        mockMvc = MockMvcBuilders.standaloneSetup(personController).setMessageConverters(messageConverter).build();
+        /*
+        mockMvc = MockMvcBuilders.standaloneSetup(personController)
+                .setMessageConverters(messageConverter)
+                .addFilter(new CharacterEncodingFilter("UTF-8",true))
+                .setControllerAdvice(globalExceptionHandler)
+                .alwaysDo(print())
+                .build();
+
+         */
+        mockMvc = MockMvcBuilders.
+                webAppContextSetup(wac)
+             .addFilter(new CharacterEncodingFilter("UTF-8",true))
+                .alwaysDo(print())
+                .build();
     }
 
     @Test
@@ -55,7 +77,6 @@ class PersonControllerTest {
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/person/1"))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("martin"));
     }
@@ -69,7 +90,6 @@ class PersonControllerTest {
                 MockMvcRequestBuilders.post("/api/person")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(toJsonString(dto)))
-                .andDo(print())
                 .andExpect(status().isCreated());
         Person result = personRepository.findAll(Sort.by(Sort.Direction.DESC,"id")).get(0);
         assertAll(
@@ -77,6 +97,27 @@ class PersonControllerTest {
                 ()-> assertThat(result.getAddress()).isEqualTo("d"),
                 ()-> assertThat(result.getBirthday()).isEqualTo(Birthday.of(LocalDate.now()))
         );
+    }
+    @Test
+    void postPersonIfNameIsNull() throws Exception {
+        PersonDto personDto = new PersonDto();
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/person")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(toJsonString(personDto)))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    void postPersonIfNameIsEmpty() throws Exception {
+        PersonDto personDto = PersonDto.builder()
+                .name("").build();
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/person")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(toJsonString(personDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.message").value("이름은 필수 값입니다"));
     }
 
     @Test
@@ -87,7 +128,6 @@ class PersonControllerTest {
                 MockMvcRequestBuilders.put("/api/person/1")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(toJsonString(dto)))
-                .andDo(print())
                 .andExpect(status().isOk());
         Person result = personRepository.findById(1L).get();
         assertAll(
@@ -102,16 +142,35 @@ class PersonControllerTest {
         mockMvc.perform(
                 MockMvcRequestBuilders.patch("/api/person/1")
                 .param("name", "martin22"))
-                .andDo(print())
                 .andExpect(status().isOk());
         assertThat(personRepository.findById(1L).get().getName()).isEqualTo("martin22");
 
     }
     @Test
+    void modifyPersonIfNameIsDifferent() throws Exception {
+        PersonDto personDto = PersonDto.builder().name("james").hobby("game").build();
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/api/person/1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(toJsonString(personDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.message").value("이름을 변경 허용하지 않습니다"));
+    }
+    @Test
+    void modifyPersonIfPersonNotFound() throws Exception {
+        PersonDto personDto = PersonDto.builder().name("cathy").hobby("singing").build();
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/api/person/10")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(toJsonString(personDto)))
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.message").value("Person Entity가 존재하지 않습니다"));
+    }
+    @Test
     void deletePerson() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.delete("/api/person/1"))
-                .andDo(print())
                 .andExpect(status().isOk());
         assertTrue(personRepository.findPeopleDeleted().stream().anyMatch(person -> person.getId().equals(1L)));
         log.info("people deleted: {}",personRepository.findPeopleDeleted());
