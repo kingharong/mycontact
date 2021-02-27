@@ -2,20 +2,24 @@ package com.test.study.project1.mycontact.controller;
 
 import com.test.study.project1.mycontact.controller.dto.PersonDto;
 import com.test.study.project1.mycontact.domain.Person;
-import com.test.study.project1.mycontact.exception.PersonNotFoundException;
-import com.test.study.project1.mycontact.exception.RenameNotPermittedException;
-import com.test.study.project1.mycontact.exception.dto.ErrorResponse;
+
 import com.test.study.project1.mycontact.repository.PersonRepository;
 import com.test.study.project1.mycontact.service.PersonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import java.util.List;
 
 
 @RestController
@@ -27,7 +31,10 @@ public class PersonController {
     private final PersonService personService;
     private final PersonRepository personRepository;
 
-
+    @GetMapping
+    public Page<Person> getAll(@PageableDefault Pageable pageable) {
+        return personService.getAll(pageable);
+    }
 
 
     @GetMapping("/{id}")

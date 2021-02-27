@@ -1,16 +1,18 @@
 package com.test.study.project1.mycontact.service;
 
 import com.test.study.project1.mycontact.controller.dto.PersonDto;
-import com.test.study.project1.mycontact.domain.Block;
+
 import com.test.study.project1.mycontact.domain.Person;
 import com.test.study.project1.mycontact.domain.dto.Birthday;
 import com.test.study.project1.mycontact.exception.PersonNotFoundException;
 import com.test.study.project1.mycontact.exception.RenameNotPermittedException;
-import com.test.study.project1.mycontact.repository.BlockRepository;
+
 import com.test.study.project1.mycontact.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,5 +94,9 @@ public class PersonService {
         Person person = personRepository.findById(id).orElseThrow(PersonNotFoundException::new);
         person.setDeleted(true);
         personRepository.save(person);
+    }
+
+    public Page<Person> getAll(Pageable pageable) {
+        return personRepository.findAll(pageable);
     }
 }

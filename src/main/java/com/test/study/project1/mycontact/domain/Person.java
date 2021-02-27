@@ -44,7 +44,7 @@ public class Person {
 
     private String job;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private Block block;
     //@ToString.Exclude 쓰면 블럭에 대한 쿼리문이 나오지 않음
